@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Definir a versão do script
-SCRIPT_VERSION="1.1"
+SCRIPT_VERSION="1.2"
 
 # Atualiza o sistema e instala dependências
 echo "[*] Iniciando instalação do Greenbone OpenVAS - Versão $SCRIPT_VERSION"
@@ -14,12 +14,18 @@ apt install -y \
     gpgsm gnutls-bin rsync \
     snmp nmap \
     python3-impacket \
-    openvas
+    openvas \
+    openssh-server  # Adicionando SSH Server
 
 # Habilita e inicia os serviços necessários
 echo "[*] Iniciando serviços..."
 systemctl enable --now postgresql
 systemctl enable --now redis-server
+
+# Habilita e inicia o SSH
+echo "[*] Configurando SSH para iniciar automaticamente..."
+systemctl enable --now ssh
+echo "[*] SSH foi ativado e está rodando!"
 
 # Verifica se o OpenVAS já está instalado
 if command -v gvmd &> /dev/null; then
@@ -75,6 +81,8 @@ echo "[*] Acesse a interface web pelo navegador:"
 echo "➡️  https://$IP"
 echo "[*] Login: admin"
 echo "[*] Senha: admin123"
+echo "[*] SSH ativado! Você pode acessar remotamente via:"
+echo "➡️  ssh kali@$IP"
 echo "[*] Versão do script: $SCRIPT_VERSION"
 
 exit 0
