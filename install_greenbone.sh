@@ -1,6 +1,10 @@
 #!/bin/bash
 
+# Definir a versão do script
+SCRIPT_VERSION="1.1"
+
 # Atualiza o sistema e instala dependências
+echo "[*] Iniciando instalação do Greenbone OpenVAS - Versão $SCRIPT_VERSION"
 echo "[*] Atualizando pacotes e instalando dependências..."
 apt update -y && apt upgrade -y
 apt install -y \
@@ -46,6 +50,14 @@ systemctl restart openvas-scanner
 systemctl restart gvmd
 systemctl restart gsad
 
+# Adicionando usuário ao grupo _gvm
+USER_TO_ADD="kali"
+echo "[*] Adicionando o usuário '$USER_TO_ADD' ao grupo '_gvm' e ajustando permissões..."
+sudo chown root:$USER_TO_ADD /bin/gvm-script
+sudo chown _gvm:$USER_TO_ADD -R /var/run/gvmd/
+sudo usermod -a -G _gvm $USER_TO_ADD
+echo "[*] Usuário '$USER_TO_ADD' adicionado ao grupo '_gvm' com sucesso!"
+
 # Configura atualização automática dos feeds às 07:00 e 19:00
 echo "[*] Configurando atualização automática dos feeds..."
 (crontab -l 2>/dev/null; echo "0 7 * * * /usr/bin/greenbone-feed-sync --type GVMD_DATA && echo '[*] GVMD_DATA atualizado com sucesso às 07:00!'") | crontab -
@@ -63,6 +75,7 @@ echo "[*] Acesse a interface web pelo navegador:"
 echo "➡️  https://$IP"
 echo "[*] Login: admin"
 echo "[*] Senha: admin123"
+echo "[*] Versão do script: $SCRIPT_VERSION"
 
 exit 0
 
