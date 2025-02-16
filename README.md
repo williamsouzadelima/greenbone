@@ -1,26 +1,19 @@
-📌 Instalação e Configuração do Greenbone OpenVAS no Kali Linux
+📌 O que mudou na versão 1.2?
 
-Este script automatiza a instalação e configuração do Greenbone OpenVAS em um sistema Kali Linux, tornando-o pronto para uso rapidamente. Ele inclui diversas otimizações para melhorar a experiência do usuário e garantir que o scanner de vulnerabilidades funcione corretamente.
+✅ Adicionado suporte ao SSH:
 
-🔧 O que o script faz?
+Instalado OpenSSH Server (openssh-server)
 
-✅ Atualiza o sistema e instala todas as dependências necessárias
+SSH configurado para iniciar automaticamente no boot
 
-✅ Instala e configura o Greenbone OpenVAS
+Mensagem de confirmação com comando SSH para acesso remoto
 
-✅ Habilita e inicia os serviços essenciais (PostgreSQL, Redis, OpenVAS Scanner, GSA)
+✅ Melhoria no gerenciamento de versões do script
 
-✅ Configura a interface web para rodar na porta 443
+📜 Como usar a versão 1.2 do script?
 
-✅ Atualiza automaticamente os feeds do Greenbone (GVMD_DATA, SCAP e CERT) às 07:00 e 19:00
+Baixe o script atualizado:
 
-✅ Exibe as credenciais de acesso e a URL para acesso ao scanner
-
-
-📜 Como usar o script?
-
-Clone o repositório ou baixe o script manualmente:
-```
 git clone https://github.com/seu-usuario/Greenbone-Install.git
 
 cd Greenbone-Install
@@ -29,28 +22,18 @@ Dê permissão de execução:
 
 chmod +x install_openvas.sh
 
-Execute o script como root:
+Execute com permissões de root:
 
 sudo ./install_openvas.sh
-```
-
 
 🌐 Acesso ao Greenbone OpenVAS
 
+URL: https://<IP_DO_KALI>
 
-Após a instalação, o OpenVAS estará acessível via navegador:
+Usuário: admin
 
+Senha: admin123
 
-🌍 URL: https://<IP_DO_KALI>
+Acesso SSH:
 
-🔑 Usuário: admin
-
-🔒 Senha: admin123
-
-📢 Nota: Após a instalação, recomenda-se alterar a senha do usuário admin por questões de segurança.
-
-🛠 Personalizações Futuras
-
-Se precisar de ajustes, como agendamento de scans automáticos, exportação de relatórios, ou integração com Wazuh, contribuições são bem-vindas! 🚀
-
-📩 Dúvidas ou sugestões? Abra uma Issue ou um Pull Request!
+ssh kali@<IP_DO_KALI>
