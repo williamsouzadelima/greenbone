@@ -20,7 +20,7 @@ Este script automatiza a instalação e configuração do Greenbone OpenVAS em u
 📜 Como usar o script?
 
 Clone o repositório ou baixe o script manualmente:
-
+```
 git clone https://github.com/seu-usuario/Greenbone-Install.git
 
 cd Greenbone-Install
@@ -32,6 +32,8 @@ chmod +x install_openvas.sh
 Execute o script como root:
 
 sudo ./install_openvas.sh
+```
+
 
 🌐 Acesso ao Greenbone OpenVAS
 
