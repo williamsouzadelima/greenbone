@@ -20,21 +20,35 @@ Este script automatiza a instalação e configuração do Greenbone OpenVAS em u
 📜 Como usar o script?
 
 Clone o repositório ou baixe o script manualmente:
+
 git clone https://github.com/seu-usuario/Greenbone-Install.git
+
 cd Greenbone-Install
+
 Dê permissão de execução:
+
 chmod +x install_openvas.sh
+
 Execute o script como root:
+
 sudo ./install_openvas.sh
 
 🌐 Acesso ao Greenbone OpenVAS
 
+
 Após a instalação, o OpenVAS estará acessível via navegador:
 
+
 🌍 URL: https://<IP_DO_KALI>
+
 🔑 Usuário: admin
+
 🔒 Senha: admin123
+
 📢 Nota: Após a instalação, recomenda-se alterar a senha do usuário admin por questões de segurança.
+
 🛠 Personalizações Futuras
+
 Se precisar de ajustes, como agendamento de scans automáticos, exportação de relatórios, ou integração com Wazuh, contribuições são bem-vindas! 🚀
+
 📩 Dúvidas ou sugestões? Abra uma Issue ou um Pull Request!
