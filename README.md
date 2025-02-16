@@ -5,11 +5,17 @@ Este script automatiza a instalação e configuração do Greenbone OpenVAS em u
 🔧 O que o script faz?
 
 ✅ Atualiza o sistema e instala todas as dependências necessárias
+
 ✅ Instala e configura o Greenbone OpenVAS
+
 ✅ Habilita e inicia os serviços essenciais (PostgreSQL, Redis, OpenVAS Scanner, GSA)
+
 ✅ Configura a interface web para rodar na porta 443
+
 ✅ Atualiza automaticamente os feeds do Greenbone (GVMD_DATA, SCAP e CERT) às 07:00 e 19:00
+
 ✅ Exibe as credenciais de acesso e a URL para acesso ao scanner
+
 
 📜 Como usar o script?
 
