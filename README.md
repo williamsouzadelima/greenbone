@@ -22,14 +22,16 @@ cd Greenbone-Install
 
 Dê permissão de execução:
 
+```
 chmod +x install_openvas.sh
-
+```
 Execute com permissões de root:
-
+```
 sudo ./install_openvas.sh
+```
 
 🌐 Acesso ao Greenbone OpenVAS
-
+```
 URL: https://<IP_DO_KALI>
 
 Usuário: admin
@@ -39,3 +41,4 @@ Senha: admin123
 Acesso SSH:
 
 ssh kali@<IP_DO_KALI>
+```
