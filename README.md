@@ -13,10 +13,12 @@ Mensagem de confirmação com comando SSH para acesso remoto
 📜 Como usar a versão 1.2 do script?
 
 Baixe o script atualizado:
-
+```
 git clone https://github.com/seu-usuario/Greenbone-Install.git
 
 cd Greenbone-Install
+```
+
 
 Dê permissão de execução:
 
