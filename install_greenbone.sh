@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Definir a versão do script
-SCRIPT_VERSION="1.5"
+SCRIPT_VERSION="1.7"
 
 # Atualiza o sistema e instala dependências
 echo "[*] Iniciando instalação do Greenbone OpenVAS - Versão $SCRIPT_VERSION"
@@ -17,7 +17,10 @@ apt install -y \
     openvas \
     openssh-server \
     python3-pip \
-    openvas-reporting
+    python3-flask \
+    python3-openssl \
+    python3-lxml python3-xlwt python3-xlrd python3-openpyxl \
+    git
 
 # Habilita e inicia os serviços necessários
 echo "[*] Iniciando serviços..."
@@ -31,7 +34,7 @@ echo "[*] SSH foi ativado e está rodando!"
 
 # Instala bibliotecas Python necessárias para os scripts de relatórios
 echo "[*] Instalando dependências Python para geração de relatórios..."
-pip3 install gvm-tools lxml chardet openvasreporting
+pip3 install gvm-tools lxml chardet flask flask-wtf openvasreporting cryptography
 
 # Verifica se o OpenVAS já está instalado
 if command -v gvmd &> /dev/null; then
@@ -79,105 +82,37 @@ echo "[*] Configurando atualização automática dos feeds..."
 (crontab -l 2>/dev/null; echo "0 19 * * * /usr/bin/greenbone-feed-sync --type SCAP") | crontab -
 (crontab -l 2>/dev/null; echo "0 19 * * * /usr/bin/greenbone-feed-sync --type CERT") | crontab -
 
-# Instala o script de geração de relatórios XLSX
-echo "[*] Instalando o script de geração de relatórios XLSX..."
-cat << 'EOF' > /usr/local/bin/gerar_relatorio.py
-import os
-import subprocess
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import threading
-import socket
-import getpass
-import time
+# Instalação do OpenVAS Reporting (Exportador de Excel)
+echo "[*] Clonando o repositório OpenVAS Reporting..."
+git clone https://github.com/TheGroundZero/openvasreporting.git /opt/openvasreporting
 
-def get_local_ip():
-    hostname = socket.gethostname()
-    return socket.gethostbyname(hostname)
+echo "[*] Instalando OpenVAS Reporting..."
+cd /opt/openvasreporting
+python3 setup.py install
 
-def generate_report_interactively():
-    print("=== Greenbone Report Generator ===\n")
-    gmp_username = input("Digite o GMP Username (exemplo: admin): ").strip()
-    gmp_password = getpass.getpass("Digite o GMP Password (entrada segura): ").strip()
-    report_id = input("Digite o Report ID do relatório que deseja gerar: ").strip()
-    xlsx_name = input("Digite o nome desejado para o arquivo XLSX (sem extensão): ").strip()
-    port = input("Digite a porta para o servidor HTTP (padrão: 8000): ").strip()
-    port = int(port) if port else 8000
+# Adicionando openvasreporting ao PATH
+echo 'export PATH=$PATH:/opt/openvasreporting/scripts' >> ~/.bashrc
+source ~/.bashrc
 
-    if not xlsx_name.endswith(".xlsx"):
-        xlsx_name += ".xlsx"
+# Verificar instalação do openvasreporting
+if command -v openvasreporting &> /dev/null; then
+    echo "[*] OpenVAS Reporting instalado com sucesso!"
+else
+    echo "[!] Erro ao instalar OpenVAS Reporting. Verifique manualmente."
+fi
 
-    socket_path = "/var/run/gvmd/gvmd.sock"
-    gen_report_script = "/usr/local/bin/gen_report_full.py"
-    temp_report_path = "/tmp/report_generated.xml"
-    output_report_path = f"/tmp/{xlsx_name}"
-
-    gvm_command = [
-        "sudo", "-u", "_gvm", "gvm-script",
-        "--gmp-username", gmp_username,
-        "--gmp-password", gmp_password,
-        "socket",
-        "--socketpath", socket_path,
-        gen_report_script,
-        report_id,
-        temp_report_path
-    ]
-
-    print("\nGerando o relatório em formato XML...")
-    try:
-        subprocess.run(gvm_command, check=True)
-        print(f"Relatório gerado com sucesso: {temp_report_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Erro ao gerar o relatório XML: {e}")
-        return None, None, None
-
-    openvas_command = [
-        "openvasreporting",
-        "-i", temp_report_path,
-        "-o", output_report_path,
-        "-f", "xlsx"
-    ]
-
-    print("\nConvertendo o relatório para formato XLSX...")
-    try:
-        subprocess.run(openvas_command, check=True)
-        print(f"Relatório convertido com sucesso: {output_report_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Erro ao converter o relatório: {e}")
-        return temp_report_path, None, None
-
-    return temp_report_path, output_report_path, port
-
-def start_http_server(directory, ip, port, xlsx_filename, duration=300):
-    os.chdir(directory)
-    server_address = (ip, port)
-    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
-
-    def stop_server_after_duration():
-        time.sleep(duration)
-        print("\nO tempo limite de 5 minutos foi atingido. Encerrando o servidor HTTP...")
-        httpd.shutdown()
-
-    thread = threading.Thread(target=stop_server_after_duration, daemon=True)
-    thread.start()
-
-    print(f"\nServidor HTTP disponível em: http://{ip}:{port}")
-    print(f"XML: http://{ip}:{port}/report_generated.xml")
-    print(f"XLSX: http://{ip}:{port}/{xlsx_filename}")
-
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\nServidor HTTP encerrado pelo usuário.")
-
-if __name__ == "__main__":
-    local_ip = get_local_ip()
-    xml_path, xlsx_path, port = generate_report_interactively()
-    if xml_path and xlsx_path:
-        start_http_server("/tmp", local_ip, port, os.path.basename(xlsx_path), duration=300)
-EOF
-
-chmod +x /usr/local/bin/gerar_relatorio.py
-echo "[*] Script de geração de relatórios instalado em /usr/local/bin/gerar_relatorio.py"
+# Exibe informações de acesso
+IP=$(hostname -I | awk '{print $1}')
+echo "[*] OpenVAS instalado com sucesso!"
+echo "[*] Acesse a interface web pelo navegador:"
+echo "➡️  https://$IP"
+echo "[*] Login: admin"
+echo "[*] Senha: admin123"
+echo "[*] SSH ativado! Você pode acessar remotamente via:"
+echo "➡️  ssh kali@$IP"
+echo "[*] OpenVAS Reporting instalado! Para exportar relatórios, use:"
+echo "➡️  openvasreporting -i <arquivo.xml> -o <arquivo.xlsx> -f xlsx"
+echo "[*] Versão do script: $SCRIPT_VERSION"
 
 exit 0
 
